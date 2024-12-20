@@ -10,6 +10,7 @@ from branca.colormap import linear
 import streamlit as st
 from streamlit_folium import st_folium
 import plotly.express as px
+import os
 
 # ---------------------------
 # Streamlit Configuration
@@ -21,10 +22,9 @@ st.set_page_config(layout="wide", page_title="NYC Resilience Hub Prioritization 
 # ---------------------------
 # File paths
 PATHS = {
-    "primary": "output/RH_Primary_Sites.geojson",
-    "secondary": "output/RH_Secondary_Sites.geojson"
+    "primary": os.path.join(os.path.dirname(__file__), "output", "RH_Primary_Sites.geojson"),
+    "secondary": os.path.join(os.path.dirname(__file__), "output", "RH_Secondary_Sites.geojson")
 }
-
 
 # Index configuration
 INDEX_CONFIG = {
