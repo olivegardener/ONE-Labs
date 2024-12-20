@@ -9,4 +9,3 @@ fiona
 streamlit-folium
 plotly
 branca
-os
