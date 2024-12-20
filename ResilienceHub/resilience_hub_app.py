@@ -21,9 +21,10 @@ st.set_page_config(layout="wide", page_title="NYC Resilience Hub Prioritization 
 # ---------------------------
 # File paths
 PATHS = {
-    "primary": "/Users/oliveratwood/One Architecture Dropbox/Oliver Atwood/P2415_CSC Year Two/05 GIS/06 Scripts/ResilienceHub/output/RH_Primary_Sites.geojson",
-    "secondary": "/Users/oliveratwood/One Architecture Dropbox/Oliver Atwood/P2415_CSC Year Two/05 GIS/06 Scripts/ResilienceHub/output/RH_Secondary_Sites.geojson"
+    "primary": "output/RH_Primary_Sites.geojson",
+    "secondary": "output/RH_Secondary_Sites.geojson"
 }
+
 
 # Index configuration
 INDEX_CONFIG = {
