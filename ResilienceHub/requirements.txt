@@ -3,3 +3,6 @@ geopandas
 pandas
 numpy
 folium
+pyproj
+shapely
+fiona
