@@ -228,8 +228,10 @@ def format_fields(gdf):
 
     # Format population estimates with commas
     if 'pop_est' in gdf.columns:
-        gdf['pop_est'] = gdf['pop_est'].apply(lambda x: f"{int(str(x).replace(',', '')):,}" if pd.notnull(x) and x != 0 else 'Unknown')
-
+        gdf['pop_est'] = gdf['pop_est'].apply(
+            lambda x: f"{int(float(x)):,}" if pd.notnull(x) and x != 0 else 'Unknown'
+        )
+        
     # Format text fields
     for field in ['OwnerName', 'OPTYPE']:
         if field in gdf.columns:
