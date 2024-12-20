@@ -1,0 +1,100 @@
+=== Solar Analysis Debug Output ===
+Total buildings: 1765
+Buildings with positive potential: 1765
+
+Column Statistics:
+
+bin:
+- Range: 1000042.0 to 5167157.0
+- Mean: 2807458.823796034
+- Non-null count: 1765
+
+cnstrct_yr:
+- Range: 0.0 to 2022.0
+- Mean: 1920.772804532578
+- Non-null count: 1765
+
+doitt_id:
+- Range: 101.0 to 1298608.0
+- Mean: 504345.304815864
+- Non-null count: 1765
+
+feat_code:
+- Range: 2100.0 to 5110.0
+- Mean: 2118.7365439093483
+- Non-null count: 1765
+
+groundelev:
+- Range: -4.0 to 334.0
+- Mean: 54.82946175637394
+- Non-null count: 1765
+
+heightroof:
+- Range: 7.14 to 602.0
+- Mean: 61.332043645886685
+- Non-null count: 1765
+
+Shape_Length:
+- Range: 69.89581737015143 to 3456.6990610918497
+- Mean: 587.0888402501199
+- Non-null count: 1765
+
+Shape_Area:
+- Range: 302.76838056222635 to 213015.10871784607
+- Mean: 16561.157864635927
+- Non-null count: 1765
+
+index_right:
+- Range: 1 to 2511
+- Mean: 1279.7813031161472
+- Non-null count: 1765
+
+ObjectID:
+- Range: 2 to 2512
+- Mean: 1280.7813031161472
+- Non-null count: 1765
+
+area_m2:
+- Range: 28.128237089721374 to 19789.467436929695
+- Mean: 1538.5809877259599
+- Non-null count: 1765
+
+solar_potential:
+- Range: 4977.706936991323 to 3502105.412658374
+- Mean: 271066.76702130254
+- Non-null count: 1765
+
+shadow_factor:
+- Range: 0.7312130738022055 to 1.0
+- Mean: 0.9948372301174802
+- Non-null count: 1765
+
+effective_area:
+- Range: 19.68966360156076 to 13852.819851649836
+- Mean: 1077.0068743687902
+- Non-null count: 1765
+
+peak_power:
+- Range: 3.937932720312152 to 2770.5639703299676
+- Mean: 215.40137487375802
+- Non-null count: 1765
+
+annual_radiation:
+- Range: 1685.3875 to 1685.3875
+- Mean: 1685.3875000000005
+- Non-null count: 1765
+
+performance_ratio:
+- Range: 0.75 to 0.75
+- Mean: 0.75
+- Non-null count: 1765
+
+kwh_per_m2:
+- Range: 184.85660616342224 to 252.8081250000001
+- Mean: 251.50293482619367
+- Non-null count: 1765
+
+efficiency_score:
+- Range: 10.968196107033085 to 15.000000000000005
+- Mean: 14.922558451762201
+- Non-null count: 1765
