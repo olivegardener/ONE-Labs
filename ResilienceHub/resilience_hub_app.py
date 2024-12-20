@@ -406,18 +406,19 @@ for index_name, comp_dict in COMPONENTS.items():
 
 # Load and process data
 if "gdf_primary" not in st.session_state:
+    # Load data
     gdf_primary = gpd.read_file(PATHS["primary"])
     gdf_secondary = gpd.read_file(PATHS["secondary"])
 
-    # Ensure data is in EPSG:4326
-    for gdf in [gdf_primary, gdf_secondary]:
-        if gdf.crs is not None and gdf.crs.to_epsg() != 4326:
-            gdf = gdf.to_crs(epsg=4326)
+    # Convert CRS to EPSG:4326
+    gdf_primary = gdf_primary.to_crs(epsg=4326)
+    gdf_secondary = gdf_secondary.to_crs(epsg=4326)
 
     # Calculate indices and format fields
-    for gdf in [gdf_primary, gdf_secondary]:
-        gdf = calculate_indices(gdf, normalized_weights)
-        gdf = format_fields(gdf)
+    gdf_primary = calculate_indices(gdf_primary, normalized_weights)
+    gdf_secondary = calculate_indices(gdf_secondary, normalized_weights)
+    gdf_primary = format_fields(gdf_primary)
+    gdf_secondary = format_fields(gdf_secondary)
 
     st.session_state.update({
         "gdf_primary": gdf_primary,
@@ -429,15 +430,17 @@ else:
     gdf_secondary = st.session_state["gdf_secondary"]
 
     if normalized_weights != st.session_state["weights"]:
-        for gdf in [gdf_primary, gdf_secondary]:
-            gdf = calculate_indices(gdf, normalized_weights)
-            gdf = format_fields(gdf)
+        gdf_primary = calculate_indices(gdf_primary, normalized_weights)
+        gdf_secondary = calculate_indices(gdf_secondary, normalized_weights)
+        gdf_primary = format_fields(gdf_primary)
+        gdf_secondary = format_fields(gdf_secondary)
 
         st.session_state.update({
             "gdf_primary": gdf_primary,
             "gdf_secondary": gdf_secondary,
             "weights": normalized_weights
         })
+
 
 # ---------------------------
 # Visualization
