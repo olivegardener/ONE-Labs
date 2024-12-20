@@ -21,9 +21,10 @@ st.set_page_config(layout="wide", page_title="NYC Resilience Hub Prioritization 
 # Application Constants
 # ---------------------------
 # File paths
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PATHS = {
-    "primary": os.path.join(os.path.dirname(__file__), "output", "RH_Primary_Sites.geojson"),
-    "secondary": os.path.join(os.path.dirname(__file__), "output", "RH_Secondary_Sites.geojson")
+    "primary": os.path.join(SCRIPT_DIR, "output", "RH_Primary_Sites.geojson"),
+    "secondary": os.path.join(SCRIPT_DIR, "output", "RH_Secondary_Sites.geojson")
 }
 
 # Index configuration
