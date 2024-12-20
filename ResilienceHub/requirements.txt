@@ -6,3 +6,6 @@ folium
 pyproj
 shapely
 fiona
+streamlit-folium
+plotly
+branca
