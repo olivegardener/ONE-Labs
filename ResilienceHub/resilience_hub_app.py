@@ -229,9 +229,9 @@ def format_fields(gdf):
     # Format population estimates with commas
     if 'pop_est' in gdf.columns:
         gdf['pop_est'] = gdf['pop_est'].apply(
-            lambda x: f"{int(float(x)):,}" if pd.notnull(x) and x != 0 else 'Unknown'
+            lambda x: f"{int(float(str(x).replace(',', ''))):,}" if pd.notnull(x) and x != 0 else 'Unknown'
         )
-        
+
     # Format text fields
     for field in ['OwnerName', 'OPTYPE']:
         if field in gdf.columns:
@@ -339,7 +339,7 @@ st.markdown(f"<style>{CUSTOM_CSS}</style>", unsafe_allow_html=True)
 # ---------------------------
 # Main Application Layout
 # ---------------------------
-st.markdown("<h1 style='text-align: left; color: white;'>NYC Resilience Hub Prioritization Tool</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: left; color: white;'>NYC Resilience Hub Prioritization Tool [under development]</h1>", unsafe_allow_html=True)
 
 # ---------------------------
 # Sidebar Configuration
