@@ -9,7 +9,7 @@ from folium.features import GeoJsonTooltip, GeoJsonPopup
 from branca.colormap import linear
 import streamlit as st
 from streamlit_folium import st_folium
-import plotly.express as px
+import plotly.express as px 
 from pathlib import Path
 
 # ---------------------------
@@ -500,7 +500,7 @@ with col1:
 
     st.plotly_chart(fig, use_container_width=True)
 
-# Folium map
+
 with col2:
     global colormap
     colormap = linear.YlGn_09.scale(0, 1).to_step(n=10)
@@ -512,14 +512,29 @@ with col2:
         tiles="CartoDB positron"
     )
 
-    add_site_layer(gdf_primary, "Primary Sites", m)
-    add_site_layer(gdf_secondary, "Secondary Sites", m)
+    ### NEW/CHANGED: Add a slider for Suitability Index threshold
+    threshold = st.slider(
+        "Suitability Index Threshold",
+        min_value=0.0,
+        max_value=1.0,
+        value=0.0,
+        step=0.05,
+        help="Only show sites with a normalized Suitability Index at or above this threshold."
+    )
+
+    # Filter out sites that do not meet the threshold
+    gdf_primary_filtered = gdf_primary[gdf_primary["index_norm"] >= threshold]
+    gdf_secondary_filtered = gdf_secondary[gdf_secondary["index_norm"] >= threshold]
+
+    # Add filtered layers to the map
+    add_site_layer(gdf_primary_filtered, "Primary Sites", m)
+    add_site_layer(gdf_secondary_filtered, "Secondary Sites", m)
 
     colormap.add_to(m)
     folium.LayerControl().add_to(m)
 
     # Fit map bounds to data
-    combined = pd.concat([gdf_primary, gdf_secondary], ignore_index=True)
+    combined = pd.concat([gdf_primary_filtered, gdf_secondary_filtered], ignore_index=True)
     if not combined.empty:
         bounds = gpd.GeoDataFrame(combined, crs=gdf_primary.crs).total_bounds
         m.fit_bounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]])
