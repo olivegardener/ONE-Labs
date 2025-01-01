@@ -10,6 +10,7 @@ from branca.colormap import linear
 import streamlit as st
 from streamlit_folium import st_folium
 import plotly.express as px
+from pathlib import Path
 
 # ---------------------------
 # Streamlit Configuration
@@ -19,10 +20,13 @@ st.set_page_config(layout="wide", page_title="NYC Resilience Hub Prioritization 
 # ---------------------------
 # Application Constants
 # ---------------------------
-# File paths
+# Determine the folder in which the current script is located
+script_dir = Path(__file__).resolve().parent
+
+# Update your PATHS dictionary to build paths relative to this script
 PATHS = {
-    "primary": "output/RH_Primary_Sites.geojson",
-    "secondary": "output/RH_Secondary_Sites.geojson"
+    "primary": script_dir / "output" / "RH_Primary_Sites.geojson",
+    "secondary": script_dir / "output" / "RH_Secondary_Sites.geojson"
 }
 
 
