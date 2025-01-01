@@ -44,7 +44,7 @@ if __name__ == "__main__":
     script_dir = Path(__file__).resolve().parent
     
     # 1) Use a single Path object, not a set:
-    input_path = script_dir / "output" / "RH_Primary_Sites.geojson"
+    input_path = script_dir / "output" / "sites_pop.geojson"
     print(f"Reading input from: {input_path}")
     
     # 2) Verify the file actually exists:
