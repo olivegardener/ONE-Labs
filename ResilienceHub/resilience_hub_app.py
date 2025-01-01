@@ -330,9 +330,7 @@ def add_neighborhood_layer(gdf, layer_name, folium_map):
         data=gdf.__geo_interface__,
         name=layer_name,
         style_function=lambda feature: {
-            "fillColor": "#AFEEEE",  # Light cyan
             "color": "#333333",
-            "fillOpacity": 0.2,
             "weight": 1
         },
         tooltip=folium.GeoJsonTooltip(
