@@ -405,7 +405,7 @@ suitability_threshold = st.sidebar.slider(
     max_value=1.0,
     value=0.5,
     step=0.05,
-    help="Only display sites with a Suitability (normalized) index above this threshold."
+    help="Only display sites with a Suitability Index above this threshold."
 )
 
 # ---------------------------
