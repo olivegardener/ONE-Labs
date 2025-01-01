@@ -15,7 +15,7 @@ from pathlib import Path
 # ---------------------------
 # Streamlit Configuration
 # ---------------------------
-st.set_page_config(layout="wide", page_title="NYC Resilience Hub Prioritization Tool")
+st.set_page_config(layout="wide", page_title="NYC Resilience Hub Prioritization Tool [Under Development]")
 
 # ---------------------------
 # Application Constants
