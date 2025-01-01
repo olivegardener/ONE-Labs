@@ -336,7 +336,7 @@ def add_neighborhood_layer(gdf, layer_name, folium_map):
             "weight": 1
         },
         tooltip=folium.GeoJsonTooltip(
-            fields=["NAME"],           # Update field name if different in your data
+            fields=["Name"],           # Update field name if different in your data
             aliases=["Neighborhood:"],
             sticky=True
         )
