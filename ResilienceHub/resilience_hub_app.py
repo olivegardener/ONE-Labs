@@ -10,6 +10,8 @@ from branca.colormap import linear
 import streamlit as st
 from streamlit_folium import st_folium
 import plotly.express as px
+
+# NEW: for building paths relative to this script
 from pathlib import Path
 
 # ---------------------------
@@ -20,10 +22,10 @@ st.set_page_config(layout="wide", page_title="NYC Resilience Hub Prioritization 
 # ---------------------------
 # Application Constants
 # ---------------------------
-# Determine the folder in which the current script is located
+
+# 1) Build absolute paths relative to this script's location
 script_dir = Path(__file__).resolve().parent
 
-# Update your PATHS dictionary to build paths relative to this script
 PATHS = {
     "primary": script_dir / "output" / "RH_Primary_Sites.geojson",
     "secondary": script_dir / "output" / "RH_Secondary_Sites.geojson"
@@ -185,7 +187,6 @@ def create_sub_index(gdf, components_dict, flood_hazard=False):
 
         norm_vals = min_max_normalize(col_data)
 
-        # If flood hazard, invert the values of columns ending with "_in"
         if flood_hazard and col.endswith("_in"):
             norm_vals = 1 - norm_vals
 
@@ -225,12 +226,10 @@ def format_fields(gdf):
             gdf[field] = gdf[field].apply(lambda x: 'Unknown' if pd.isna(x) or x == 0 else x)
 
     # Format index fields to 2 decimal places
-    index_fields = [
-        'Adaptability_Index', 'Solar_Energy_Index', 
-        'Heat_Hazard_Index', 'Flood_Hazard_Index',
-        'Heat_Vulnerability_Index', 'Flood_Vulnerability_Index',
-        'Service_Population_Index'
-    ]
+    index_fields = ['Adaptability_Index', 'Solar_Energy_Index',
+                    'Heat_Hazard_Index', 'Flood_Hazard_Index',
+                    'Heat_Vulnerability_Index', 'Flood_Vulnerability_Index',
+                    'Service_Population_Index']
     for field in index_fields:
         if field in gdf.columns:
             gdf[field] = gdf[field].apply(lambda x: f"{float(x):.2f}" if pd.notnull(x) else 'Unknown')
@@ -269,9 +268,8 @@ def style_function(feature):
             'opacity': 1
         }
 
-
-def add_site_layer(gdf, name, folium_map):
-    """Add a GeoJson layer to the map"""
+def add_site_layer(gdf, name, m):
+    """Add a GeoJSON layer to the map"""
     return folium.GeoJson(
         data=gdf.__geo_interface__,
         name=name,
@@ -300,7 +298,7 @@ def add_site_layer(gdf, name, folium_map):
             sticky=True,
             labels=True,
         )
-    ).add_to(folium_map)
+    ).add_to(m)
 
 # ---------------------------
 # CSS Styling
@@ -401,47 +399,40 @@ for idx_name in INDEX_CONFIG["names"]:
     create_index_section(idx_name, INDEX_CONFIG["labels"][idx_name])
 
 # ---------------------------
-# NEW: Suitability Threshold Slider
-# ---------------------------
-suitability_threshold = st.sidebar.slider(
-    "Suitability Threshold",
-    min_value=0.0,
-    max_value=1.0,
-    value=0.5,
-    step=0.05,
-    help="Only display sites with a Suitability Index above this threshold."
-)
-
-# ---------------------------
 # Data Processing
 # ---------------------------
 # Normalize weights
 total_w = sum(weights_input.values())
-normalized_weights = {k: v / total_w for k, v in weights_input.items()} if total_w > 0 else {
-    k: 1.0 / len(weights_input) for k in weights_input
-}
+if total_w > 0:
+    normalized_weights = {k: v/total_w for k, v in weights_input.items()}
+else:
+    normalized_weights = {k: 1.0/len(weights_input) for k in weights_input}
 
 # Normalize component weights
 for index_name, comp_dict in COMPONENTS.items():
     total = sum(comp_dict.values())
     if total > 0:
-        COMPONENTS[index_name] = {k: v / total for k, v in comp_dict.items()}
+        COMPONENTS[index_name] = {k: v/total for k, v in comp_dict.items()}
 
 # Load and process data
 if "gdf_primary" not in st.session_state:
+    # Read data from the absolute paths
     gdf_primary = gpd.read_file(PATHS["primary"])
     gdf_secondary = gpd.read_file(PATHS["secondary"])
 
     # Ensure data is in EPSG:4326
-    for gdf in [gdf_primary, gdf_secondary]:
-        if gdf.crs is not None and gdf.crs.to_epsg() != 4326:
-            gdf = gdf.to_crs(epsg=4326)
+    if gdf_primary.crs is not None and gdf_primary.crs.to_epsg() != 4326:
+        gdf_primary = gdf_primary.to_crs(epsg=4326)
+
+    if gdf_secondary.crs is not None and gdf_secondary.crs.to_epsg() != 4326:
+        gdf_secondary = gdf_secondary.to_crs(epsg=4326)
 
     # Calculate indices and format fields
     for gdf in [gdf_primary, gdf_secondary]:
         gdf = calculate_indices(gdf, normalized_weights)
         gdf = format_fields(gdf)
 
+    # Store in session_state for reuse
     st.session_state.update({
         "gdf_primary": gdf_primary,
         "gdf_secondary": gdf_secondary,
@@ -451,22 +442,16 @@ else:
     gdf_primary = st.session_state["gdf_primary"]
     gdf_secondary = st.session_state["gdf_secondary"]
 
+    # If the weights changed, recalc the indices
     if normalized_weights != st.session_state["weights"]:
         for gdf in [gdf_primary, gdf_secondary]:
             gdf = calculate_indices(gdf, normalized_weights)
             gdf = format_fields(gdf)
-
         st.session_state.update({
             "gdf_primary": gdf_primary,
             "gdf_secondary": gdf_secondary,
             "weights": normalized_weights
         })
-
-# ---------------------------
-# Filter Data by Suitability Threshold
-# ---------------------------
-gdf_primary_filtered = gdf_primary[gdf_primary["index_norm"] >= suitability_threshold].copy()
-gdf_secondary_filtered = gdf_secondary[gdf_secondary["index_norm"] >= suitability_threshold].copy()
 
 # ---------------------------
 # Visualization
@@ -523,26 +508,20 @@ with col2:
         tiles='CartoDB positron'
     )
 
-    # Add filtered layers
-    add_site_layer(gdf_primary_filtered, 'Primary Sites', m)
-    add_site_layer(gdf_secondary_filtered, 'Secondary Sites', m)
+    add_site_layer(gdf_primary, 'Primary Sites', m)
+    add_site_layer(gdf_secondary, 'Secondary Sites', m)
 
     colormap.add_to(m)
     folium.LayerControl().add_to(m)
 
-    # Fit bounds to filtered data if not empty
+    # Adjust map to show all data
     combined_gdf = gpd.GeoDataFrame(
-        pd.concat([gdf_primary_filtered, gdf_secondary_filtered], ignore_index=True), 
+        pd.concat([gdf_primary, gdf_secondary], ignore_index=True),
         crs=gdf_primary.crs
     )
-
     if not combined_gdf.empty:
         bounds = combined_gdf.total_bounds
         m.fit_bounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]])
-    else:
-        # Fallback if no sites pass the threshold
-        m.set_location([40.7128, -74.0060])
-        m.zoom_start = 11
 
     st_folium(
         m,
