@@ -24,9 +24,9 @@ st.set_page_config(layout="wide", page_title="NYC Resilience Hub Prioritization 
 script_dir = Path(__file__).resolve().parent
 
 PATHS = {
-    # Preprocessed GeoJSON outputs from your preprocessing script
     "primary": script_dir / "output" / "RH_Primary_Sites.geojson",
-    "secondary": script_dir / "output" / "RH_Secondary_Sites.geojson"
+    "secondary": script_dir / "output" / "RH_Secondary_Sites.geojson",
+    "neighborhoods": script_dir / "output" / "CSC_Neighborhoods.geojson"  # NEW
 }
 
 INDEX_CONFIG = {
@@ -181,10 +181,12 @@ def create_sub_index(gdf, components_dict, flood_hazard=False):
 
         norm_vals = min_max_normalize(col_data)
 
+        # For flood hazards, if the column name ends with "_in", invert it.
         if flood_hazard and col.endswith("_in"):
             norm_vals = 1 - norm_vals
 
         sub_index += (norm_vals * w)
+
     return sub_index
 
 def calculate_indices(gdf, weights):
@@ -213,7 +215,6 @@ def calculate_indices(gdf, weights):
     )
 
     # Add sub-index columns + final Suitability to the GDF
-    # (Note: for display, we can keep them as numeric or format them later.)
     gdf["Adaptability_Index"]       = adaptability
     gdf["Solar_Energy_Index"]       = solar
     gdf["Heat_Hazard_Index"]        = heat_hz
@@ -317,6 +318,27 @@ def add_site_layer(gdf, layer_name, folium_map):
             ],
             sticky=True,
             labels=True
+        )
+    ).add_to(folium_map)
+
+# NEW: Function to add neighborhood polygons
+def add_neighborhood_layer(gdf, layer_name, folium_map):
+    """
+    Create a GeoJson layer for neighborhoods.
+    """
+    folium.GeoJson(
+        data=gdf.__geo_interface__,
+        name=layer_name,
+        style_function=lambda feature: {
+            "fillColor": "#AFEEEE",  # Light cyan
+            "color": "#333333",
+            "fillOpacity": 0.2,
+            "weight": 1
+        },
+        tooltip=folium.GeoJsonTooltip(
+            fields=["NAME"],           # Update field name if different in your data
+            aliases=["Neighborhood:"],
+            sticky=True
         )
     ).add_to(folium_map)
 
@@ -430,16 +452,19 @@ def load_data():
     # Load the preprocessed GeoJSONs
     gdf_primary = gpd.read_file(PATHS["primary"])
     gdf_secondary = gpd.read_file(PATHS["secondary"])
+    gdf_neighborhoods = gpd.read_file(PATHS["neighborhoods"])  # NEW
 
     # Reproject to EPSG:4326 (if needed) for Folium display
     if gdf_primary.crs and gdf_primary.crs.to_epsg() != 4326:
         gdf_primary = gdf_primary.to_crs(epsg=4326)
     if gdf_secondary.crs and gdf_secondary.crs.to_epsg() != 4326:
         gdf_secondary = gdf_secondary.to_crs(epsg=4326)
+    if gdf_neighborhoods.crs and gdf_neighborhoods.crs.to_epsg() != 4326:
+        gdf_neighborhoods = gdf_neighborhoods.to_crs(epsg=4326)
 
-    return gdf_primary, gdf_secondary
+    return gdf_primary, gdf_secondary, gdf_neighborhoods
 
-gdf_primary_raw, gdf_secondary_raw = load_data()
+gdf_primary_raw, gdf_secondary_raw, gdf_neighborhoods_raw = load_data()
 
 # ---------------------------
 # Calculate Indices On-The-Fly
@@ -500,7 +525,6 @@ with col1:
 
     st.plotly_chart(fig, use_container_width=True)
 
-
 with col2:
     global colormap
     colormap = linear.YlGn_09.scale(0, 1).to_step(n=10)
@@ -512,7 +536,7 @@ with col2:
         tiles="CartoDB positron"
     )
 
-    ### NEW/CHANGED: Add a slider for Suitability Index threshold
+    # Slider to filter by Suitability Index
     threshold = st.slider(
         "Suitability Index Threshold",
         min_value=0.0,
@@ -522,21 +546,29 @@ with col2:
         help="Only show sites with a normalized Suitability Index at or above this threshold."
     )
 
-    # Filter out sites that do not meet the threshold
+    # Filter primary/secondary sites that meet the threshold
     gdf_primary_filtered = gdf_primary[gdf_primary["index_norm"] >= threshold]
     gdf_secondary_filtered = gdf_secondary[gdf_secondary["index_norm"] >= threshold]
 
-    # Add filtered layers to the map
+    # Add Neighborhoods layer (no index_norm filter needed)
+    add_neighborhood_layer(gdf_neighborhoods_raw, "Neighborhoods", m)
+
+    # Add site layers
     add_site_layer(gdf_primary_filtered, "Primary Sites", m)
     add_site_layer(gdf_secondary_filtered, "Secondary Sites", m)
 
     colormap.add_to(m)
     folium.LayerControl().add_to(m)
 
-    # Fit map bounds to data
-    combined = pd.concat([gdf_primary_filtered, gdf_secondary_filtered], ignore_index=True)
-    if not combined.empty:
-        bounds = gpd.GeoDataFrame(combined, crs=gdf_primary.crs).total_bounds
+    # Fit map bounds to show all data (including neighborhoods)
+    combined = pd.concat(
+        [gdf_primary_filtered, gdf_secondary_filtered, gdf_neighborhoods_raw],
+        ignore_index=True
+    )
+    combined_gdf = gpd.GeoDataFrame(combined, crs=gdf_primary.crs)
+
+    if not combined_gdf.empty:
+        bounds = combined_gdf.total_bounds  # [minx, miny, maxx, maxy]
         m.fit_bounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]])
 
     st_folium(
