@@ -15,7 +15,7 @@ from pathlib import Path
 # ---------------------------
 # Streamlit Configuration
 # ---------------------------
-st.set_page_config(layout="wide", page_title="NYC Resilience Hub Prioritization Tool [Under Development]")
+st.set_page_config(layout="wide", page_title="NYC Resilience Hub Prioritization Tool")
 
 # ---------------------------
 # Application Constants
@@ -388,7 +388,7 @@ st.markdown(f"<style>{CUSTOM_CSS}</style>", unsafe_allow_html=True)
 # ---------------------------
 # Main App
 # ---------------------------
-st.markdown("<h1 style='text-align: left; color: white;'>NYC Resilience Hub Prioritization Tool</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: left; color: white;'>NYC Resilience Hub Prioritization Tool [under development]</h1>", unsafe_allow_html=True)
 
 # ---------------------------
 # Sidebar: Weight Sliders
