@@ -40,15 +40,14 @@ def run_script(script_path):
 def main():
     # List of scripts to run in order
     scripts = [
-        # "preprocessing.py",
+        "preprocessing.py",
         "solar_analysis_RH.py",
         "heat_analysis.py",
         "flood_analysis.py",
         "vulnerability_analysis.py",
         "census_analysis.py",
         "RH_analysis.py",
-        "RH_webmap.py"
-        # "RH_webmap+.py"
+        "resilience_hub_app.py"
     ]
     
     start_time = time.time()

@@ -36,7 +36,7 @@ import time
 # -----------------------------------------------------------------------------
 
 RESOLUTION = 10.0  # feet
-BUFFER = 2000.0    # feet (updated from 200)
+BUFFER = 2000.0    # feet
 TARGET_CRS = 'EPSG:6539'
 
 SCRIPT_DIR = Path(__file__).parent

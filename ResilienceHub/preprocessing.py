@@ -234,8 +234,8 @@ def process_facilities(gdf):
     gdf = gdf[keep_cols]
     
     # Remove rows where fclass is 'Community Facilities' and name contains 'State Park'
-    gdf = gdf[~((gdf['fclass'] == 'Community Facilities') & 
-                (gdf['name'].str.contains('State Park', na=False)))]
+    # gdf = gdf[~((gdf['fclass'] == 'Community Facilities') & 
+    #             (gdf['name'].str.contains('State Park', na=False)))]
     
     # Print summaries
     print("\nFacility counts by fclass:")

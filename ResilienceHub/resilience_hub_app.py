@@ -79,10 +79,10 @@ INDEX_CONFIG = {
 
 COMPONENT_LABELS = {
     "Adaptability_Index_components": {
-        "RS_Priority": "Building Type Prioritization",
+        "RS_Priority": "Building Type Prioritization (Primary/Secondary)",
         "CAPACITY": "Building Capacity (number of people)",
-        "BldgArea": "Building Area",
-        "StrgeArea": "Storage Area"
+        "BldgArea": "Building Area (PLUTO)",
+        "StrgeArea": "Storage Area (PLUTO)"
     },
     "Solar_Energy_Index_components": {
         "peak_power": "Peak Solar Power Potential"
